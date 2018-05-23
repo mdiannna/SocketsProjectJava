@@ -223,7 +223,9 @@ public class SocketsServer
                 while (true)
                 {
                     input = in.readLine();
-
+                       if(input==null) {
+                           break;
+                       }
 //                    String response = new Scanner(System.in).next();
                     setChanged();
                     notifyObservers(connectedPlayers.get(id) + "{}" + input);
