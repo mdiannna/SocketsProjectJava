@@ -154,9 +154,9 @@ public class SocketsClient extends Frame implements ActionListener {
         @Override
         public void run() {
             String input = "";
-
-            while (true) {
-                try {
+   
+            try {
+                while (true) {
                     input = in.readLine();
                     if (input == null) {
                         break;
@@ -164,9 +164,9 @@ public class SocketsClient extends Frame implements ActionListener {
                     System.out.println("Input:" + input);
                     setChanged();
                     notifyObservers(input);
-                } catch (IOException ex) {
+                } 
+            } catch (IOException ex) {
                     Logger.getLogger(MessageThread.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
         }
 

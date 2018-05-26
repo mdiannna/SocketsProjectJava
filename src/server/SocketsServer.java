@@ -18,7 +18,7 @@ public class SocketsServer {
     //pentru a verifica rapid daca un anumit nume este disponibil sau nu
     private static HashSet<String> numeUtilizatori = new HashSet<String>();
 
-    private static ArrayList<Integer> ClientsWaitingIDs = new ArrayList<Integer>();
+    private static HashSet<Integer> ClientsWaitingIDs = new HashSet<Integer>();
     private static HashMap<Integer, Socket> clientSockets = new HashMap<Integer, Socket>();
 
     private static HashMap<Integer, Integer> clientSocketsCatLevels = new HashMap<Integer, Integer>();
@@ -46,7 +46,7 @@ public class SocketsServer {
                     Integer otherPlayerID = -1;
 
                     public void update(Observable obj, Object arg) {
-                        System.out.println("*" + connectedPlayers.get(clientsID + 1));
+                        System.out.println("*" + connectedPlayers.get(clientsID ));
                         String otherPlayerIDString = arg.toString().substring(0, arg.toString().indexOf("{}"));
                         arg = arg.toString().substring(arg.toString().indexOf("{}") + 2);
                         try {
@@ -89,6 +89,8 @@ public class SocketsServer {
         private BufferedReader in;
         private PrintWriter out;
         private int id;
+        PrintWriter connectedClientOut = null;
+
 
         public FirUtilizator(Socket socket, Integer id) {
             this.socket = socket;
@@ -117,11 +119,6 @@ public class SocketsServer {
 
                 out.println("Nume acceptat!");
 
-                // Verific daca in coada de asteptare exista un client cu care se poate conecta
-                // Daca nu, il adaug in coada de asteptare
-                ClientsWaitingIDs.add(this.id);
-                System.out.println("Clientul cu id-ul " + this.id + " a fost adaugat in coada de asteptare");
-                out.println("Waiting for matching player...");
 
                 out.println("_CAT_LEVEL?");
 
@@ -148,35 +145,45 @@ public class SocketsServer {
                 clientSocketsCatLevels.put(id, catLevel);
 
                 System.out.println("Cat level:" + catLevel);
-
-                for (int i = 0; i < ClientsWaitingIDs.size(); i++) {
-
-                    if (i != id && abs(clientSocketsCatLevels.get(i) - catLevel) < 4) {
-                        connectedPlayers.put(i, id);
-                        connectedPlayers.put(id, i);
-                        break;
+                
+                
+                while(true) {
+                    if(!connectedPlayers.containsKey(id)) {
+                        // Verific daca in coada de asteptare exista un client cu care se poate conecta
+                        // Daca nu, il adaug in coada de asteptare
+                        if(!ClientsWaitingIDs.contains(this.id)) {
+                            ClientsWaitingIDs.add(this.id);
+                            System.out.println("Clientul cu id-ul " + this.id + " a fost adaugat in coada de asteptare");
+                            out.println("Waiting for matching player to connect...");
+                        }
+                       
+                        for (int i = 0; i < ClientsWaitingIDs.size(); i++) {
+                            if (i != id && abs(clientSocketsCatLevels.get(i) - catLevel) < 4) {
+                                connectedPlayers.put(i, id);
+                                connectedPlayers.put(id, i);
+                                Socket otherClientSocket = clientSockets.get(connectedPlayers.get(id));
+                                connectedClientOut = new PrintWriter(otherClientSocket.getOutputStream(), true);
+                                ClientsWaitingIDs.remove(this.id);
+                                out.println("Connected with player" + i + ". Game starts.");
+//           
+                                break;
+                            }
+                        }
                     }
-                }
+                
+//
+//                while (connectedPlayers.get(id) == null) {
+//                    input = in.readLine();
+//                    out.println("Waiting for other player to connect");
+//                }
 
-                while (connectedPlayers.get(id) == null) {
+//                while (true) {
                     input = in.readLine();
-                    out.println("Waiting for other player to connect");
-                }
-
-                PrintWriter connectedClientOut = null;
-
-                if (connectedPlayers.get(id) != null) {
-                    Socket otherClientSocket = clientSockets.get(connectedPlayers.get(id));
-                    connectedClientOut = new PrintWriter(otherClientSocket.getOutputStream(), true);
-                }
-
-                while (true) {
-                    input = in.readLine();
-                    if (input == null) {
-                        break;
+                    
+                    if (input != null) {
+                        setChanged();
+                        notifyObservers(connectedPlayers.get(id) + "{}" + input);
                     }
-                    setChanged();
-                    notifyObservers(connectedPlayers.get(id) + "{}" + input);
                 }
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -184,6 +191,11 @@ public class SocketsServer {
                 // TODO: elimina din clientSockets si connected Players
                 //clientul s-a deconectat, deci trebuie sa fie eliminat
                 //din lista clientilor activi
+//                clientSockets.remove(this.id);
+            
+                connectedPlayers.remove(connectedPlayers.get(id));
+                connectedPlayers.remove(this.id);
+
                 System.out.println("Utilizatorul " + nume + " s-a deconectat de la server!");
 
                 if (nume != null) {
@@ -191,6 +203,9 @@ public class SocketsServer {
                 }
                 try {
                     socket.close();
+                    clientSockets.get(connectedPlayers.get(id)).close();
+                    System.out.println("Utilizatorul " + nume + " s-a deconectat de la server!");
+                    connectedClientOut.println("The other player is disconnected. Game ends.");
                 } catch (IOException ex) {
                     System.out.println(ex);
                 }
