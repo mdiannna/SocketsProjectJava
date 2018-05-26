@@ -12,5 +12,6 @@ public class SuperCat extends CatDecorator {
     public SuperCat(Cat c) {
         super(c);
         System.out.println("A super cat was created");
+        this.setColor("<no color defined>");
     }
 }

@@ -10,7 +10,12 @@ package players;
 public class BlackCat extends CatDecorator {
     public BlackCat(Cat c) {
         super(c);
-        this.setColor("black");
+        c.setColor("black");
         System.out.println("A black cat was created");
+    }
+    
+    @Override
+    public void setColor(String color) {        
+        System.out.println("The color of black cat can't be changed");
     }
 }

@@ -6,9 +6,14 @@
 package players;
 
 public class WhiteCat extends CatDecorator {
-     public WhiteCat(Cat c) {
+    public WhiteCat(Cat c) {
         super(c);
-        this.setColor("white");
+        c.setColor("white");
         System.out.println("A white cat was created");
+    }
+    
+    @Override
+    public void setColor(String color) {        
+        System.out.println("The color of white cat can't be changed");
     }
 }
