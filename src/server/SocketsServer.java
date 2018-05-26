@@ -164,8 +164,7 @@ public class SocketsServer {
                                 Socket otherClientSocket = clientSockets.get(connectedPlayers.get(id));
                                 connectedClientOut = new PrintWriter(otherClientSocket.getOutputStream(), true);
                                 ClientsWaitingIDs.remove(this.id);
-                                out.println("Connected with player" + i + ". Game starts.");
-//           
+                                out.println("Connected with player" + i + " Game starts.");
                                 break;
                             }
                         }

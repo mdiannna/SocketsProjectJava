@@ -11,5 +11,6 @@ public class BlackCat extends CatDecorator {
     public BlackCat(Cat c) {
         super(c);
         this.setColor("black");
+        System.out.println("A black cat was created");
     }
 }

@@ -10,5 +10,6 @@ public class GrayCat extends CatDecorator {
     public GrayCat(Cat c) {
         super(c);
         this.setColor("gray");
+        System.out.println("A gray cat was created");
     }
 }

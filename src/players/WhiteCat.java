@@ -9,5 +9,6 @@ public class WhiteCat extends CatDecorator {
      public WhiteCat(Cat c) {
         super(c);
         this.setColor("white");
+        System.out.println("A white cat was created");
     }
 }

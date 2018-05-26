@@ -15,6 +15,7 @@ public class BasicCat implements Cat {
     protected int coefficient = 1;
     
     public BasicCat() {
+        System.out.println("A basic cat was created");
     }
     
     @Override

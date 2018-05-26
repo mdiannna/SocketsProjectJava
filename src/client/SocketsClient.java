@@ -12,6 +12,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import players.Cat;
@@ -78,7 +79,8 @@ public class SocketsClient extends Frame implements ActionListener {
 //        int portServer = sc.nextInt();
         int portServer = 9999;
 
-        sc.nextLine();
+//        sc.nextLine();
+       
 
         BufferedReader in;
         PrintWriter out;
@@ -93,9 +95,10 @@ public class SocketsClient extends Frame implements ActionListener {
                 String mesajServer = in.readLine();
 
                 if (mesajServer.startsWith("Nume utilizator?")) {
-                    System.out.print("Nume utilizator: ");
-                    String nume = sc.nextLine();
+                    // String nume = sc.nextLine();
+                    String nume = UUID.randomUUID().toString();
                     out.println(nume);
+                    System.out.print("Nume utilizator: " + nume);              
                 } else if (mesajServer.startsWith("Waiting for matching player...")) {
                     System.out.print("Waiting for matching player...");
                 } else //server-ul ii transmite clientului faptul ca numele de utilizator a fost acceptat
